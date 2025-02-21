@@ -24,17 +24,22 @@ class Folder(db.Model):
     name = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
+
 class Record(db.Model):
     __tablename__ = "record"
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    id_folder = db.Column(db.Integer, db.ForeignKey("folder.id"), nullable=False)  # Новое поле для папки
     trash = db.Column(db.Integer, default=0, nullable=False)
     length = db.Column(db.Float, nullable=True)
     audio_file = db.Column(db.String(255), nullable=True)
     datetime = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Связь "Record -> Mistake"
+    # Связь с таблицей Mistake (один ко многим)
     mistakes = db.relationship("Mistake", backref="record", lazy=True)
+
+    # Связь с Folder – позволяет получить объект папки, к которой относится запись
+    folder = db.relationship("Folder", backref="records", lazy=True)
 
 class Mistake(db.Model):
     __tablename__ = "mistake"
